@@ -1,0 +1,38 @@
+name: garuda
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get: ^4.7.2
+  qr_flutter: ^4.0.0
+  url_launcher: ^6.1.10
+  flip_card: ^0.7.0
+  upi_pay: ^1.1.0
+  get_storage: ^2.1.1
+  turn_page_transition: ^0.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/ganesha.jpg
+    - assets/images/book.png
+    - assets/images/splash.jpg
+    - assets/images/ganeshaa.jpg
+    - assets/images/gani.png
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
