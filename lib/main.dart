@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'GARUDA',
-      initialRoute: AppRoutes.SPLASH,
+      initialRoute: AppRoutes.ANIMATION,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
     );
