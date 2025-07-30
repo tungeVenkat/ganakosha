@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:garuda/app/modules/donor_entry/donor_model.dart';
 import 'package:garuda/app/modules/payment_options/binding/payment_options_binding.dart';
 import 'package:garuda/app/modules/payment_options/view/payment_options_view.dart';
 import 'package:get/get.dart';
@@ -159,78 +160,110 @@ class DonorEntryView extends GetView<DonorEntryController> {
                   _inputField("Amount-(₹)", donor.amountController,
                       keyboardType: TextInputType.number),
                   const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () {
-                      PaymentOptionsBinding().dependencies();
-                      Get.dialog(
-                        AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          insetPadding:
-                              const EdgeInsets.symmetric(horizontal: 20),
-                          backgroundColor: Colors.orange[50],
-                          title: Column(
-                            children: [
-                              // const Icon(Icons.volunteer_activism,
-                              //     size: 36, color: Colors.deepOrange),
-                              const SizedBox(height: 8),
-                              const Text(
-                                "Choose Offering Mode",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.deepOrange,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 6),
-                              const Text(
-                                "Your contribution makes Vinayaka Chavithi divine ✨",
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.black54),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                          content:
-                              PaymentOptionsView(), // 👇 custom content below
-
-                          actions: [
-                            TextButton(
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // 👈 Left: Edit & Delete Icons
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit,
+                                  color: Colors.deepOrange),
                               onPressed: () {
-                                Get.back();
+                                print(
+                                    'Edit clicked for: ${donor.nameController.text}');
+                                // TODO: Implement edit logic here
                               },
-                              child: const Text(
-                                "Cancel",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.deepOrange,
-                                ),
-                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                controller.donorList.removeAt(index);
+                                if (controller.currentIndex.value >=
+                                        controller.donorList.length &&
+                                    controller.donorList.isNotEmpty) {
+                                  controller.currentIndex.value =
+                                      controller.donorList.length - 1;
+                                }
+                              },
                             ),
                           ],
                         ),
-                      );
-                    },
-                    child: Container(
-                      width: 100,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.deepOrange),
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.orange.shade50,
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        "pay",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.deepOrange,
-                          fontWeight: FontWeight.bold,
+
+                        // 👉 Right: Pay Button
+                        GestureDetector(
+                          onTap: () {
+                            PaymentOptionsBinding().dependencies();
+                            Get.dialog(
+                              AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                insetPadding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                backgroundColor: Colors.orange[50],
+                                title: Column(
+                                  children: const [
+                                    SizedBox(height: 8),
+                                    Text(
+                                      "Choose Offering Mode",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.deepOrange,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 6),
+                                    Text(
+                                      "Your contribution makes Vinayaka Chavithi divine ✨",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.black54),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                                content: PaymentOptionsView(),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    child: const Text(
+                                      "Cancel",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.deepOrange,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 100,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.deepOrange),
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.orange.shade50,
+                            ),
+                            alignment: Alignment.center,
+                            child: const Text(
+                              "pay",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.deepOrange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
