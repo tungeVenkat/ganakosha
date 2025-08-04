@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:garuda/app/modules/donor_entry/donor_model.dart';
 import 'package:get/get.dart';
 import '../controller/payment_options_controller.dart';
 
 class PaymentOptionsView extends GetView<PaymentOptionsController> {
+  final DonorModel donor;
+
+  const PaymentOptionsView({super.key, required this.donor});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,7 +29,15 @@ class PaymentOptionsView extends GetView<PaymentOptionsController> {
           ),
           const SizedBox(height: 16),
           _paymentButton(
-              Icons.qr_code_scanner, "Scan UPI QR", controller.handleQR),
+            Icons.qr_code_scanner,
+            "Scan UPI QR",
+            () {
+              Get.back(); // 👈 First close this dialog
+              Future.delayed(Duration(milliseconds: 300), () {
+                controller.handleQR(donor); // 👈 Then open QR popup
+              });
+            },
+          ),
           _paymentButton(Icons.money, "Cash Payment", controller.handleCash),
         ],
       ),

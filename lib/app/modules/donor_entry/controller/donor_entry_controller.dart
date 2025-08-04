@@ -48,6 +48,14 @@ class DonorEntryController extends GetxController {
     }
   }
 
+  void enableEditing(int index) {
+    final donor = filteredDonorList[index];
+    donor.isEditable = true;
+
+    donorList.refresh(); // refresh both lists to update UI
+    filteredDonorList.refresh();
+  }
+
   // 💰 Total amount (regardless of paid/unpaid)
   int get totalAmount =>
       donorList.fold(0, (sum, d) => sum + (int.tryParse(d.amount ?? '0') ?? 0));

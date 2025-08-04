@@ -133,7 +133,7 @@ class DonorEntryView extends GetView<DonorEntryController> {
             onPageChanged: (index) => controller.currentIndex.value = index,
             itemCount: controller.filteredDonorList.isEmpty
                 ? 1 // Just one item to show 'no results' message
-                : controller.filteredDonorList.length,
+                : controller.filteredDonorList.length + 1,
             itemBuilder: (context, index) {
               if (controller.filteredDonorList.isEmpty) {
                 return Center(child: Text("No donors found"));
@@ -298,34 +298,32 @@ class DonorEntryView extends GetView<DonorEntryController> {
                                 icon: const Icon(Icons.edit,
                                     color: Colors.deepOrange),
                                 onPressed: () {
-                                  print(
-                                      'Edit clicked for: ${donor.nameController.text}');
-                                  donor.isEditable = true;
-                                  controller.donorList.refresh();
+                                  controller.enableEditing(
+                                      index); // 👈 triggers editable state
                                 },
                               ),
-                              IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () async {
-                                  final donor = controller.donorList[index];
+                              // IconButton(
+                              //   icon:
+                              //       const Icon(Icons.delete, color: Colors.red),
+                              //   onPressed: () async {
+                              //     final donor = controller.donorList[index];
 
-                                  if (donor.id != null) {
-                                    await controller.deleteDonorFromFirestore(
-                                        donor.id!); // 👍 OK to await here
-                                  }
+                              //     if (donor.id != null) {
+                              //       await controller.deleteDonorFromFirestore(
+                              //           donor.id!); // 👍 OK to await here
+                              //     }
 
-                                  controller.donorList.removeAt(index);
-                                  controller.donorList.refresh();
+                              //     controller.donorList.removeAt(index);
+                              //     controller.donorList.refresh();
 
-                                  if (controller.currentIndex.value >=
-                                          controller.donorList.length &&
-                                      controller.donorList.isNotEmpty) {
-                                    controller.currentIndex.value =
-                                        controller.donorList.length - 1;
-                                  }
-                                },
-                              ),
+                              //     if (controller.currentIndex.value >=
+                              //             controller.donorList.length &&
+                              //         controller.donorList.isNotEmpty) {
+                              //       controller.currentIndex.value =
+                              //           controller.donorList.length - 1;
+                              //     }
+                              //   },
+                              // ),
                             ],
                           ),
 
@@ -334,67 +332,68 @@ class DonorEntryView extends GetView<DonorEntryController> {
                             children: [
                               // ✅ SAVE button
                               // ✅ SAVE button with isSaving check
-                              Obx(() => GestureDetector(
-                                    onTap: controller.isSaving.value
-                                        ? null
-                                        : () {
-                                            donor.name =
-                                                donor.nameController.text;
-                                            donor.mobile =
-                                                donor.mobileController.text;
-                                            donor.amount =
-                                                donor.amountController.text;
-                                            donor.isEditable = false;
+                              Obx(
+                                () => GestureDetector(
+                                  onTap: controller.isSaving.value
+                                      ? null
+                                      : () {
+                                          donor.name =
+                                              donor.nameController.text;
+                                          donor.mobile =
+                                              donor.mobileController.text;
+                                          donor.amount =
+                                              donor.amountController.text;
+                                          donor.isEditable = false;
 
-                                            controller
-                                                .saveDonorToFirestore(donor);
-                                            controller.donorList.refresh();
-                                            Get.snackbar(
-                                              "Success",
-                                              "Donor ${donor.name} details saved successfully!",
-                                              snackPosition:
-                                                  SnackPosition.BOTTOM,
-                                              backgroundColor:
-                                                  Colors.green.shade50,
-                                              colorText: Colors.green.shade800,
-                                            );
-                                          },
-                                    child: Container(
-                                      width: 80,
-                                      height: 40,
-                                      margin: const EdgeInsets.only(right: 8),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: controller.isSaving.value
-                                                ? Colors.grey
-                                                : Colors.green),
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: controller.isSaving.value
-                                            ? Colors.grey.shade200
-                                            : Colors.green.shade50,
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: controller.isSaving.value
-                                          ? const SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                valueColor:
-                                                    AlwaysStoppedAnimation(
-                                                        Colors.green),
-                                              ),
-                                            )
-                                          : const Text(
-                                              "save",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.green,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
+                                          controller
+                                              .saveDonorToFirestore(donor);
+                                          controller.donorList.refresh();
+                                          Get.snackbar(
+                                            "Success",
+                                            "Donor ${donor.name} details saved successfully!",
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            backgroundColor:
+                                                Colors.orangeAccent,
+                                            colorText: Colors.black,
+                                          );
+                                        },
+                                  child: Container(
+                                    width: 80,
+                                    height: 40,
+                                    margin: const EdgeInsets.only(right: 8),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: controller.isSaving.value
+                                              ? Colors.orangeAccent
+                                              : Colors.blueAccent),
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: controller.isSaving.value
+                                          ? Colors.orangeAccent.shade200
+                                          : Colors.blue.shade50,
                                     ),
-                                  )),
+                                    alignment: Alignment.center,
+                                    child: controller.isSaving.value
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation(
+                                                      Colors.blueAccent),
+                                            ),
+                                          )
+                                        : const Text(
+                                            "save",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.blueAccent,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
 
                               // 💰 PAY button
                               GestureDetector(
@@ -434,7 +433,9 @@ class DonorEntryView extends GetView<DonorEntryController> {
                                           ),
                                         ],
                                       ),
-                                      content: PaymentOptionsView(),
+                                      content: PaymentOptionsView(
+                                        donor: donor,
+                                      ),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
@@ -454,50 +455,53 @@ class DonorEntryView extends GetView<DonorEntryController> {
                                   );
                                 },
                                 child: Container(
-                                  width: 80,
-                                  height: 40,
+                                  width: 100,
+                                  height: 44,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
                                   decoration: BoxDecoration(
+                                    color: donor.isPaid
+                                        ? Colors.green.shade50
+                                        : Colors.orange.shade50,
                                     border: Border.all(
-                                        color: donor.isPaid
-                                            ? Colors.green
-                                            : Colors.deepOrange),
-                                    borderRadius: BorderRadius.circular(
-                                      8,
+                                      color: donor.isPaid
+                                          ? Colors.green
+                                          : Colors.deepOrange,
+                                      width: 1.5,
                                     ),
-                                    color: Colors.orange.shade50,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: donor.isPaid
+                                            ? Colors.green.withOpacity(0.2)
+                                            : Colors.orange.withOpacity(0.2),
+                                        blurRadius: 6,
+                                        offset: const Offset(1, 2),
+                                      ),
+                                    ],
                                   ),
-                                  alignment: Alignment.center,
                                   child: Row(
-                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
                                         donor.isPaid
                                             ? Icons.check_circle_rounded
                                             : Icons.volunteer_activism,
                                         color: donor.isPaid
-                                            ? Colors.green
+                                            ? Colors.green.shade700
                                             : Colors.deepOrange,
-                                        size: 18,
+                                        size: 20,
                                       ),
-                                      const SizedBox(width: 6),
+                                      const SizedBox(width: 8),
                                       Text(
-                                        donor.isPaid ? "PAID" : "PAY",
+                                        donor.isPaid ? "paid" : "pay",
                                         style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 1.0,
                                           color: donor.isPaid
-                                              ? Colors.green.shade700
+                                              ? Colors.green.shade800
                                               : Colors.deepOrange,
-                                          shadows: [
-                                            Shadow(
-                                              color: donor.isPaid
-                                                  ? Colors.green.shade100
-                                                  : Colors.orange.shade100,
-                                              blurRadius: 4,
-                                              offset: const Offset(1, 1),
-                                            ),
-                                          ],
                                         ),
                                       ),
                                     ],
