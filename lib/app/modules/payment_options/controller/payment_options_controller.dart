@@ -1,7 +1,5 @@
 import 'package:garuda/app/modules/donor_entry/donor_model.dart';
-import 'package:garuda/app/modules/qr_payment/binding/qr_payment_binding.dart';
 import 'package:garuda/app/modules/qr_payment/view/qr_payment_view.dart';
-import 'package:garuda/app/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'package:garuda/app/modules/donor_entry/controller/donor_entry_controller.dart';
 
