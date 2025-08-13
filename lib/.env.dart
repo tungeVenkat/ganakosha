@@ -1,0 +1,1 @@
+const String fast2smsApiKey = "V925w2Z8ZqyGzRsrYiz8ArIXTa2a5zbK6537hWOEO8RcmnyjM1UYZdq0YuAV";

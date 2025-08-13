@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:garuda/app/modules/donor_entry/donor_model.dart';
+import 'package:garuda/app/services/sms_service.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -156,6 +157,9 @@ class DonorEntryController extends GetxController {
     donor.isPaid = true;
 
     await saveDonorToFirestore(donor);
+
+    SmsService.sendSMS(donor.mobile.toString(), donor.name.toString(),
+        donor.amount.toString());
 
     print("✅ Payment done & donor saved: ${donor.name}");
   }

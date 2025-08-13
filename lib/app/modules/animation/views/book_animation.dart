@@ -4,7 +4,7 @@ import '../../../routes/app_routes.dart';
 
 class BookAnimationView extends StatelessWidget {
   void _goToDonorEntryPage() {
-    Get.toNamed(AppRoutes.DONOR_ENTRY);
+    Get.offNamed(AppRoutes.DONOR_ENTRY);
   }
 
   @override

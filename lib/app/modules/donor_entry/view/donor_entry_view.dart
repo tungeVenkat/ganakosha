@@ -132,38 +132,19 @@ class DonorEntryView extends GetView<DonorEntryController> {
             physics: const BouncingScrollPhysics(),
             onPageChanged: (index) => controller.currentIndex.value = index,
             itemCount: controller.filteredDonorList.isEmpty
-                ? 1 // Just one item to show 'no results' message
-                : controller.filteredDonorList.length + 1,
+                ? 1 // Show only the "No donors found" page
+                : controller.filteredDonorList.length, // Show all donors
             itemBuilder: (context, index) {
               if (controller.filteredDonorList.isEmpty) {
-                return Center(child: Text("No donors found"));
-              }
-              if (index == controller.donorList.length) {
-                // Add Page
-                return Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 16),
-                    ),
-                    onPressed: () {
-                      controller.addNewDonor();
-                      pageController.nextPage(
-                        duration: const Duration(milliseconds: 700),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                    child: const Text(
-                      "Add",
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
+                return const Center(
+                  child: Text(
+                    "No donors found",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 );
               }
+
+              // Show donor card
               final donor = controller.filteredDonorList[index];
               return TurnPageTransition(
                 animation: const AlwaysStoppedAnimation(1.0),
@@ -174,7 +155,7 @@ class DonorEntryView extends GetView<DonorEntryController> {
                 ),
               );
             },
-          )),
+          ),),
     );
   }
 
@@ -348,28 +329,46 @@ class DonorEntryView extends GetView<DonorEntryController> {
                                           controller
                                               .saveDonorToFirestore(donor);
                                           controller.donorList.refresh();
+
                                           Get.snackbar(
                                             "Success",
-                                            "Donor ${donor.name} details saved successfully!",
-                                            snackPosition: SnackPosition.BOTTOM,
+                                            "Donor ${donor.name} details saved!",
+                                            snackPosition: SnackPosition.TOP,
                                             backgroundColor:
-                                                Colors.orangeAccent,
-                                            colorText: Colors.black,
+                                                Colors.orange.withOpacity(0.9),
+                                            colorText: Colors.white,
+                                            margin: const EdgeInsets.all(12),
+                                            borderRadius: 10,
+                                            duration:
+                                                const Duration(seconds: 2),
                                           );
                                         },
                                   child: Container(
-                                    width: 80,
-                                    height: 40,
+                                    width: 90,
+                                    height: 44,
                                     margin: const EdgeInsets.only(right: 8),
                                     decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.deepOrange.shade400,
+                                          Colors.orange.shade200
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(25),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.deepOrange
+                                              .withOpacity(0.4),
+                                          blurRadius: 8,
+                                          offset: const Offset(2, 4),
+                                        ),
+                                      ],
                                       border: Border.all(
-                                          color: controller.isSaving.value
-                                              ? Colors.orangeAccent
-                                              : Colors.blueAccent),
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: controller.isSaving.value
-                                          ? Colors.orangeAccent.shade200
-                                          : Colors.blue.shade50,
+                                        color: Colors.deepOrange.shade700,
+                                        width: 1.5,
+                                      ),
                                     ),
                                     alignment: Alignment.center,
                                     child: controller.isSaving.value
@@ -380,16 +379,26 @@ class DonorEntryView extends GetView<DonorEntryController> {
                                               strokeWidth: 2,
                                               valueColor:
                                                   AlwaysStoppedAnimation(
-                                                      Colors.blueAccent),
+                                                      Colors.white),
                                             ),
                                           )
-                                        : const Text(
-                                            "save",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.blueAccent,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                        : Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: const [
+                                              Icon(Icons.spa,
+                                                  color: Colors.white,
+                                                  size: 18), // spa = lotus look
+                                              SizedBox(width: 6),
+                                              Text(
+                                                "save",
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                   ),
                                 ),
@@ -398,6 +407,19 @@ class DonorEntryView extends GetView<DonorEntryController> {
                               // 💰 PAY button
                               GestureDetector(
                                 onTap: () {
+                                  if (donor.isPaid) {
+                                    Get.snackbar(
+                                      "Already Paid",
+                                      "${donor.name} has already paid.",
+                                      snackPosition: SnackPosition.TOP,
+                                      backgroundColor: Colors.green[400],
+                                      colorText: Colors.white,
+                                      margin: const EdgeInsets.all(12),
+                                      borderRadius: 10,
+                                      duration: const Duration(seconds: 2),
+                                    );
+                                    return; // Stop here, don't open dialog
+                                  }
                                   PaymentOptionsBinding().dependencies();
                                   final paymentController =
                                       Get.find<PaymentOptionsController>();
@@ -455,7 +477,7 @@ class DonorEntryView extends GetView<DonorEntryController> {
                                   );
                                 },
                                 child: Container(
-                                  width: 100,
+                                  width: 90,
                                   height: 44,
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10),
@@ -469,7 +491,7 @@ class DonorEntryView extends GetView<DonorEntryController> {
                                           : Colors.deepOrange,
                                       width: 1.5,
                                     ),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(25),
                                     boxShadow: [
                                       BoxShadow(
                                         color: donor.isPaid
