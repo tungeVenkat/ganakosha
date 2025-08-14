@@ -13,6 +13,47 @@ class DonorEntryView extends GetView<DonorEntryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [Colors.deepOrange.shade400, Colors.orange.shade200],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(color: Colors.red, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.deepOrange.withOpacity(0.6),
+              blurRadius: 12,
+              spreadRadius: 1,
+              offset: const Offset(2, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          mini: true,
+          elevation: 0,
+          backgroundColor: Colors.transparent, // use container gradient
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.add, color: Colors.white),
+            ],
+          ),
+          onPressed: () {
+            controller.addNewDonor();
+            // Scroll to last page
+            Future.delayed(const Duration(milliseconds: 100), () {
+              pageController.animateToPage(
+                controller.currentIndex.value,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            });
+          },
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.orange.shade50,
         elevation: 0,
@@ -55,7 +96,7 @@ class DonorEntryView extends GetView<DonorEntryController> {
                 ),
               )
             : const Text(
-                "Donor Entry",
+                "Donor Entry Form",
                 style: TextStyle(
                   color: Colors.deepOrange,
                   fontWeight: FontWeight.bold,
@@ -127,35 +168,37 @@ class DonorEntryView extends GetView<DonorEntryController> {
         ],
       ),
       backgroundColor: Colors.orange.shade50,
-      body: Obx(() => PageView.builder(
-            controller: pageController,
-            physics: const BouncingScrollPhysics(),
-            onPageChanged: (index) => controller.currentIndex.value = index,
-            itemCount: controller.filteredDonorList.isEmpty
-                ? 1 // Show only the "No donors found" page
-                : controller.filteredDonorList.length, // Show all donors
-            itemBuilder: (context, index) {
-              if (controller.filteredDonorList.isEmpty) {
-                return const Center(
-                  child: Text(
-                    "No donors found",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                );
-              }
-
-              // Show donor card
-              final donor = controller.filteredDonorList[index];
-              return TurnPageTransition(
-                animation: const AlwaysStoppedAnimation(1.0),
-                overleafColor: Colors.orange.shade50,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: _donorCard(context, index, donor),
+      body: Obx(
+        () => PageView.builder(
+          controller: pageController,
+          physics: const BouncingScrollPhysics(),
+          onPageChanged: (index) => controller.currentIndex.value = index,
+          itemCount: controller.filteredDonorList.isEmpty
+              ? 1
+              : controller.filteredDonorList.length,
+          itemBuilder: (context, index) {
+            if (controller.filteredDonorList.isEmpty) {
+              return const Center(
+                child: Text(
+                  "No donors found",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               );
-            },
-          ),),
+            }
+
+            final donor = controller.filteredDonorList[index];
+
+            return TurnPageTransition(
+              animation: AlwaysStoppedAnimation(1.0),
+              overleafColor: Colors.orange.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: _donorCard(context, index, donor),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 

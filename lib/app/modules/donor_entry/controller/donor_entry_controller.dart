@@ -113,7 +113,8 @@ class DonorEntryController extends GetxController {
       }).toList();
 
       donorList.assignAll(donors);
-      filteredDonorList.assignAll(donors); // Sync search list
+      sortDonorsByPaidAndAmount(paidFirst: true);
+      filteredDonorList.assignAll(donorList);
     } catch (e) {
       print("❌ Error loading donors: $e");
     }
@@ -121,20 +122,25 @@ class DonorEntryController extends GetxController {
 
   // ➕ Add a new donor (in UI only)
   void addNewDonor() {
-    int receiptNo = donorList.length + 1;
-    String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
-
-    donorList.add(
-      DonorModel(
-        receiptNo: receiptNo.toString().padLeft(3, '0'),
-        date: date,
-        name: '',
-        mobile: '',
-        amount: '',
-      ),
+    int nextReceiptNo = donorList.length + 1 + 1;
+    String receiptStr = nextReceiptNo.toString().padLeft(3, '0');
+    final newDonor = DonorModel(
+      receiptNo: receiptStr, // auto receipt no
+      date: DateFormat('dd-MM-yyyy').format(DateTime.now()),
+      name: '',
+      mobile: '',
+      amount: '',
+      isPaid: false,
+      isEditable: true, // allow editing immediately
     );
-    currentIndex.value = donorList.length - 1;
+
+    donorList.add(newDonor);
+    donorList.refresh(); // 🔹 Force UI update for PageView
     filteredDonorList.assignAll(donorList);
+    filteredDonorList.refresh(); // 🔹 Force search list update
+
+    // Jump to the newly added donor page
+    currentIndex.value = donorList.length - 1;
   }
 
   // ✏️ Update donor from controller values (optional)
@@ -162,5 +168,23 @@ class DonorEntryController extends GetxController {
         donor.amount.toString());
 
     print("✅ Payment done & donor saved: ${donor.name}");
+  }
+
+  // 📊 Sort donors by Paid → Unpaid
+  // 📊 Sort donors by Paid → Unpaid and then by Amount (descending)
+  void sortDonorsByPaidAndAmount({bool paidFirst = true}) {
+    donorList.sort((a, b) {
+      // Step 1: Paid/Unpaid sorting
+      if (a.isPaid && !b.isPaid) return paidFirst ? -1 : 1;
+      if (!a.isPaid && b.isPaid) return paidFirst ? 1 : -1;
+
+      // Step 2: Amount sorting (descending)
+      int amountA = int.tryParse(a.amount ?? '0') ?? 0;
+      int amountB = int.tryParse(b.amount ?? '0') ?? 0;
+      return amountB.compareTo(amountA); // Higher first
+    });
+
+    filteredDonorList.assignAll(donorList);
+    donorList.refresh();
   }
 }

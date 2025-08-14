@@ -6,7 +6,7 @@ class SplashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Ensure the controller is initialized
-    final SplashController controller = Get.put(SplashController());
+    Get.put(SplashController());
 
     return Scaffold(
       body: SizedBox.expand(
