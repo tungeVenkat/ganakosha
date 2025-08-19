@@ -153,21 +153,94 @@ class DonorEntryController extends GetxController {
     filteredDonorList.refresh();
   }
 
-  // 💰 Mark donor as paid and save
-  Future<void> pay(int index) async {
-    final donor = donorList[index];
+  Future<void> markAsPaidById(String donorId) async {
+    try {
+      await donorCollection.doc(donorId).update({'isPaid': true});
+
+      // update main list
+      int mainIndex = donorList.indexWhere((d) => d.id == donorId);
+      String donorName = "";
+      if (mainIndex != -1) {
+        donorList[mainIndex].isPaid = true;
+        donorName = donorList[mainIndex].name.toString();
+      }
+      donorList.refresh();
+
+      // update filtered list
+      int filteredIndex = filteredDonorList.indexWhere((d) => d.id == donorId);
+      if (filteredIndex != -1) {
+        filteredDonorList[filteredIndex].isPaid = true;
+      }
+      filteredDonorList.refresh();
+
+      sortDonorsByPaidAndAmount();
+
+      Get.snackbar(
+        "Success",
+        "$donorName marked as PAID ✅",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green[400],
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      print("❌ Error marking as paid: $e");
+    }
+  }
+
+// 💰 Mark donor as paid and save
+  Future<void> pay(int donorIndex) async {
+    // Get donor from filtered list (UI is showing this list)
+    final donor = filteredDonorList[donorIndex];
 
     donor.name = donor.nameController.text;
     donor.mobile = donor.mobileController.text;
     donor.amount = donor.amountController.text;
     donor.isPaid = true;
 
-    await saveDonorToFirestore(donor);
+    try {
+      if (donor.id != null && donor.id!.isNotEmpty) {
+        await donorCollection.doc(donor.id).update({'isPaid': true});
+      } else {
+        await saveDonorToFirestore(donor);
+      }
 
-    SmsService.sendSMS(donor.mobile.toString(), donor.name.toString(),
-        donor.amount.toString());
+      // 🔹 Update donorList (main list)
+      int mainIndex = donorList.indexWhere((d) => d.id == donor.id);
+      if (mainIndex != -1) {
+        donorList[mainIndex] = donor;
+      }
+      donorList.refresh();
 
-    print("✅ Payment done & donor saved: ${donor.name}");
+      // 🔹 Update filteredDonorList (search list)
+      filteredDonorList[donorIndex] = donor;
+      filteredDonorList.refresh();
+
+      // 🔹 Re-sort both lists
+      sortDonorsByPaidAndAmount();
+
+      // 🔹 Show snackbar for payment confirmation
+      Get.snackbar(
+        "Success",
+        "${donor.name} has been marked as PAID ✅",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: Duration(seconds: 3),
+      );
+
+      print("✅ Payment done & donor marked as PAID: ${donor.name}");
+    } catch (e) {
+      print("❌ Error updating payment: $e");
+      Get.snackbar(
+        "Error",
+        "Failed to mark ${donor.name} as paid ❌",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: Duration(seconds: 3),
+      );
+    }
   }
 
   // 📊 Sort donors by Paid → Unpaid

@@ -4,8 +4,7 @@ import '../controllers/splash_controller.dart';
 class SplashBinding extends Bindings {
   @override
   void dependencies() {
-    print('✅ SplashBinding triggered');
-    Get.lazyPut<SplashController>(() => SplashController());
+    // Use permanent Put for initial route
+    Get.put(SplashController(), permanent: true);
   }
 }
-

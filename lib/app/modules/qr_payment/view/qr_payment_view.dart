@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:garuda/app/modules/donor_entry/controller/donor_entry_controller.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:get/get.dart';
 import '../../donor_entry/donor_model.dart';
@@ -129,8 +130,9 @@ class QRPaymentPopup extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      donor.isPaid = true;
-                      donor.isEditable = false;
+                      final donorController = Get.find<DonorEntryController>();
+                      donorController.markAsPaidById(
+                          donor.id!); // 🔹 use controller, not local setState
                       onClose();
                       Get.back();
                     },

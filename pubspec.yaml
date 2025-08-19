@@ -14,6 +14,7 @@ dependencies:
   url_launcher: ^6.1.10
   flip_card: ^0.7.0
   upi_pay: ^1.1.0
+  turn_page_transition: ^0.5.0
   get_storage: ^2.1.1
   firebase_core: ^2.27.0
   cloud_firestore: ^4.17.0
@@ -41,6 +42,7 @@ flutter:
     - assets/images/gani.png
     - assets/images/garuda.png
     - assets/images/garudaaa.png
+    - assets/images/ganesha_icon.png
 
   fonts:
     - family: Roboto
