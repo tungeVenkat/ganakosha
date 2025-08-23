@@ -17,7 +17,7 @@ class QRPaymentPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final qrData =
-        'upi://pay?pa=9652423509@ptsbi&pn=GARUDA&am=${donor.amount}&cu=INR';
+        'upi://pay?pa=9652423509@ptsbi&pn=GARUDA-YA-CKL&am=${donor.amount}&cu=INR';
 
     return Dialog(
       backgroundColor: const Color(0xFFFFF8E1),

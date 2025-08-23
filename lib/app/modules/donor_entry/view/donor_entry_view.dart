@@ -4,11 +4,13 @@ import 'package:garuda/app/modules/payment_options/binding/payment_options_bindi
 import 'package:garuda/app/modules/payment_options/controller/payment_options_controller.dart';
 import 'package:garuda/app/modules/payment_options/view/payment_options_view.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 import '../controller/donor_entry_controller.dart';
 
 class DonorEntryView extends GetView<DonorEntryController> {
   final PageController pageController = PageController();
+  final formatter = NumberFormat.decimalPattern(); // adds commas
 
   @override
   Widget build(BuildContext context) {
@@ -133,27 +135,33 @@ class DonorEntryView extends GetView<DonorEntryController> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text("🚩 Jai Shree Ganesh",
+                          const Text("Jai Shree Ganesha",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.deepOrange,
                               )),
                           const SizedBox(height: 12),
-                          _infoRow(Icons.currency_rupee, "Total Amount",
-                              controller.totalAmount.toString(), Colors.green),
+                          _infoRow(
+                            Icons.currency_rupee,
+                            "Total Amount",
+                            formatter.format(controller.totalAmount),
+                            Colors.green,
+                          ),
                           const SizedBox(height: 12),
                           _infoRow(
-                              Icons.check_circle,
-                              "Collected",
-                              controller.collectedAmount.toString(),
-                              Colors.blue),
+                            Icons.check_circle,
+                            "Collected",
+                            formatter.format(controller.collectedAmount),
+                            Colors.blue,
+                          ),
                           const SizedBox(height: 12),
                           _infoRow(
-                              Icons.hourglass_bottom,
-                              "Remaining",
-                              controller.amountToCollect.toString(),
-                              Colors.redAccent),
+                            Icons.hourglass_bottom,
+                            "Remaining",
+                            formatter.format(controller.amountToCollect),
+                            Colors.redAccent,
+                          ),
                         ],
                       ),
                     ),
